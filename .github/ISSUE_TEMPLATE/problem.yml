@@ -1,0 +1,38 @@
+name: Problem melden
+description: Etwas funktioniert nicht oder sieht falsch aus
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden! Capture Friendly ist eine **Beta**, es kann noch Fehler geben.
+        Bitte schreibe keine privaten Daten (Namen, Adressen, Passwörter) in den Text oder in Bilder.
+  - type: input
+    id: version
+    attributes:
+      label: Version von Capture Friendly
+      description: Zu sehen unter Einstellungen → Info.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows-Version
+      placeholder: "Windows 11"
+  - type: input
+    id: card
+    attributes:
+      label: Capture-Karte
+      description: So, wie sie in den Einstellungen unter „Erkannt“ steht.
+  - type: textarea
+    id: what
+    attributes:
+      label: Was ist passiert, und was hast du erwartet?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Was hast du vorher gemacht?
+      description: Zum Beispiel Schritte, die das Problem auslösen.

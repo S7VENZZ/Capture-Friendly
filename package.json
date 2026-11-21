@@ -1,0 +1,61 @@
+{
+  "name": "capture-friendly",
+  "productName": "Capture Friendly",
+  "version": "1.0.0",
+  "description": "Capture Friendly – plug & play capture card viewer for Windows, no OBS or extra software needed",
+  "homepage": "https://github.com/S7VENZZ/capture-friendly",
+  "bugs": {
+    "url": "https://github.com/S7VENZZ/capture-friendly/issues"
+  },
+  "main": "main.js",
+  "license": "MIT",
+  "author": "Capture Friendly contributors",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "test": "node about.test.js && node card-match.test.js && node card-detect.test.js && node presence.test.js && node listen.test.js && node i18n.test.js",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "app.capturefriendly",
+    "productName": "Capture Friendly",
+    "artifactName": "Capture-Friendly-Setup-${version}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "about.js",
+      "i18n.js",
+      "updater.js",
+      "preload.js",
+      "presence.js",
+      "listen.js",
+      "card-match.js",
+      "card-detect.js",
+      "capture.html",
+      "capture.js",
+      "capture.css",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

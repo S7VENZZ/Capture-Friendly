@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src mediastream:; base-uri 'none'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capture Friendly</title>
+  <link rel="stylesheet" href="capture.css" />
+</head>
+<body class="is-off no-stats no-warn">
+  <video id="pic" autoplay muted playsinline></video>
+
+  <!-- levels of a card are often "limited" (16-235): this stretches them to the full range (0-255), always -->
+  <svg class="defs" width="0" height="0" aria-hidden="true">
+    <filter id="cfRange" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.16438" intercept="-0.07306" />
+        <feFuncG type="linear" slope="1.16438" intercept="-0.07306" />
+        <feFuncB type="linear" slope="1.16438" intercept="-0.07306" />
+      </feComponentTransfer>
+    </filter>
+  </svg>
+
+  <div id="noSignal" class="no-signal-screen" aria-live="polite">
+    <div class="off-card">
+      <svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M8.5 8.5A8 8 0 0 0 4 13M2 9a13 13 0 0 1 4-2.8M12 18h.01M10 14.5a4 4 0 0 1 4.4-.4M16 11a8 8 0 0 1 4 2M19 7a13 13 0 0 1 3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <strong data-i18n="sig.title"></strong>
+      <span data-i18n="sig.text"></span>
+    </div>
+  </div>
+
+  <div id="offScreen" class="off-screen">
+    <div class="off-card">
+      <img class="off-logo" src="build/icon.png" alt="Capture Friendly" />
+      <strong id="offTitle"></strong>
+      <span id="offHint"></span>
+      <button id="btnBig" class="big-btn" type="button"></button>
+    </div>
+  </div>
+
+  <!-- the top bar: the statistics (switched on in the settings) and, always, warnings -->
+  <div id="top" class="top" role="status" data-i18n-aria="stats.aria">
+    <div class="chips">
+      <span id="stLive" class="chip">–</span>
+      <span id="stHint" class="chip warn hidden"></span>
+      <span id="stReq" class="chip warn hidden"></span>
+    </div>
+  </div>
+
+  <div id="panel" class="panel hidden" role="dialog" data-i18n-aria="panel.aria">
+    <div class="panel-head"><strong data-i18n="panel.title"></strong><span class="spacer"></span><button id="btnPanelDefault" class="chip-btn" type="button" data-i18n="panel.default" data-i18n-title="panel.defaultTip"></button></div>
+
+    <label class="prow lang-row"><span data-i18n="lang.label"></span>
+      <select id="lang"></select>
+    </label>
+
+    <h4 data-i18n="h.video"></h4>
+    <label class="prow"><span data-i18n="res.label"></span>
+      <select id="res" data-i18n-title="res.tip">
+        <option value="auto"></option>
+        <option value="720"></option>
+        <option value="1080"></option>
+        <option value="1440"></option>
+        <option value="4k"></option>
+        <option value="custom"></option>
+      </select>
+    </label>
+    <div id="customRes" class="prow hidden"><span data-i18n="res.size"></span><span class="pair"><input id="resW" type="number" min="160" max="7680" step="2" value="1920" data-i18n-aria="res.width" /> × <input id="resH" type="number" min="120" max="4320" step="2" value="1080" data-i18n-aria="res.height" /></span></div>
+    <label class="prow"><span data-i18n="fps.label"></span>
+      <select id="fps" data-i18n-title="fps.tip"></select>
+    </label>
+    <label class="prow"><span data-i18n="look.bright"></span> <span class="sl"><input id="bright" type="range" min="0" max="100" value="50" /><output id="brightOut">50</output></span></label>
+    <label class="prow"><span data-i18n="look.contrast"></span> <span class="sl"><input id="contrast" type="range" min="0" max="100" value="50" /><output id="contrastOut">50</output></span></label>
+    <label class="prow"><span data-i18n="look.hue"></span> <span class="sl"><input id="hue" type="range" min="0" max="100" value="50" /><output id="hueOut">50</output></span></label>
+    <label class="prow"><span data-i18n="look.sat"></span> <span class="sl"><input id="sat" type="range" min="0" max="100" value="50" /><output id="satOut">50</output></span></label>
+    <label class="prow switch"><span data-i18n="flip.v"></span><input id="flip" class="toggle" type="checkbox" /></label>
+    <label class="prow switch"><span data-i18n="flip.h"></span><input id="flipH" class="toggle" type="checkbox" /></label>
+
+    <h4 data-i18n="h.sound"></h4>
+    <label class="prow"><span data-i18n="boost.label"></span> <span class="sl"><input id="boost" type="range" min="-12" max="24" step="1" value="0" data-i18n-aria="boost.aria" data-i18n-title="boost.tip" /><output id="boostOut">0 dB</output></span></label>
+    <label class="prow"><span data-i18n="sink.label"></span><select id="sink" data-i18n-title="sink.tip"></select></label>
+    <details id="soundHelp" class="help">
+      <summary data-i18n="help.title"></summary>
+      <ol class="hint">
+        <li data-i18n="help.l1"></li>
+        <li data-i18n="help.l2"></li>
+        <li data-i18n="help.l3"></li>
+        <li data-i18n="help.l4"></li>
+        <li data-i18n="help.l5"></li>
+        <li data-i18n="help.l6"></li>
+      </ol>
+    </details>
+
+    <h4 data-i18n="h.card"></h4>
+    <div class="prow"><span data-i18n="card.found"></span><span id="cardName" class="val">–</span></div>
+    <div class="prow"><span data-i18n="card.modes"></span><button id="btnProbe" class="chip-btn" type="button" data-i18n="card.probe" data-i18n-title="card.probeTip"></button></div>
+    <div id="modes" class="modes" aria-live="polite"></div>
+    <p id="modesNote" class="hint"></p>
+
+    <h4 data-i18n="h.display"></h4>
+    <label class="prow switch"><span data-i18n="stats.on"></span><input id="statsOn" class="toggle" type="checkbox" /></label>
+
+    <h4 data-i18n="h.discord"></h4>
+    <label class="prow switch"><span data-i18n="pres.on"></span><input id="presenceOn" class="toggle" type="checkbox" /></label>
+    <p id="presenceNote" class="hint"></p>
+
+    <h4 data-i18n="h.info"></h4>
+    <div class="prow"><span data-i18n="info.version"></span><span class="val"><span id="verNow">–</span> <button id="btnVerCheck" class="chip-btn" type="button" data-i18n="info.check" data-i18n-title="info.checkTip"></button></span></div>
+    <div id="updateRow" class="prow hidden"><span data-i18n="info.latest"></span><span class="val"><span id="verLatest">–</span></span></div>
+    <div id="updateBar" class="update-bar hidden"><span id="updateText">–</span><button id="btnUpdate" class="chip-btn primary" type="button" data-i18n-title="info.updateTip"></button></div>
+    <a id="verLink" class="link" href="https://github.com/S7VENZZ/capture-friendly/releases/latest" target="_blank" rel="noopener noreferrer" data-i18n="info.downloads"></a>
+    <a id="donateLink" class="link" href="https://buymeacoffee.com/s7venz" target="_blank" rel="noopener noreferrer" data-i18n="info.donate"></a>
+    <p class="hint" data-i18n="info.note"></p>
+  </div>
+
+  <div id="bar" class="bar" role="toolbar" data-i18n-aria="bar.aria">
+    <button id="btnPower" class="icon-btn power" type="button" data-i18n-title="bar.power">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v10M6.4 5.6a8 8 0 1 0 11.2 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <select id="device" class="device" data-i18n-title="bar.device" data-i18n-aria="bar.deviceAria"></select>
+    <span class="spacer"></span>
+    <select id="source" class="device source" data-i18n-title="bar.source" data-i18n-aria="bar.sourceAria"></select>
+    <span class="meter" data-i18n-title="bar.meter"><span id="meterFill" class="meter-fill"></span></span>
+    <button id="btnBlack" class="icon-btn danger" type="button" data-i18n-title="bar.private">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM3 3l18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </button>
+    <button id="btnSettings" class="icon-btn" type="button" data-i18n-title="bar.settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button id="btnFull" class="icon-btn" type="button" data-i18n-title="bar.full">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="card-match.js"></script>
+  <script src="card-detect.js"></script>
+  <script src="about.js"></script>
+  <script src="capture.js"></script>
+</body>
+</html>

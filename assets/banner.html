@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1280px; height: 360px; background: transparent; }
+  :root { --a: #22d3ee; --b: #8b5cf6; }
+  .banner { position: relative; width: 1280px; height: 360px; border-radius: 28px; overflow: hidden; background: #09091a; font-family: "Segoe UI", system-ui, sans-serif; color: #fff; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px; -webkit-mask-image: radial-gradient(ellipse 70% 120% at 28% 50%, #000 0%, transparent 78%); mask-image: radial-gradient(ellipse 70% 120% at 28% 50%, #000 0%, transparent 78%); }
+  .glow { position: absolute; border-radius: 50%; filter: blur(70px); }
+  .g1 { left: -120px; top: -140px; width: 640px; height: 640px; background: var(--a); opacity: 0.42; }
+  .g2 { right: -160px; bottom: -260px; width: 700px; height: 560px; background: var(--b); opacity: 0.30; }
+  .ghost { position: absolute; right: -90px; top: -30px; width: 440px; height: 440px; opacity: 0.10; transform: rotate(12deg); filter: blur(1px); }
+  .corner { position: absolute; width: 30px; height: 30px; border: 0 solid rgba(255, 255, 255, 0.34); }
+  .tl { left: 22px; top: 22px; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 10px; }
+  .tr { right: 22px; top: 22px; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 10px; }
+  .bl { left: 22px; bottom: 22px; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 10px; }
+  .br { right: 22px; bottom: 22px; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 10px; }
+  .logo { position: absolute; left: 70px; top: 62px; width: 236px; height: 236px; filter: drop-shadow(0 18px 38px rgba(60, 150, 255, 0.55)); }
+  h1 { position: absolute; left: 352px; top: 70px; margin: 0; font-size: 96px; font-weight: 700; letter-spacing: -2px; line-height: 1.05; white-space: nowrap; }
+  h1 span { background: linear-gradient(90deg, var(--a), var(--b)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tag { position: absolute; left: 356px; top: 196px; margin: 0; font-size: 29px; color: #cfd2f7; white-space: nowrap; }
+  .chips { position: absolute; left: 356px; top: 262px; display: flex; gap: 12px; }
+  .chips b { padding: 6px 18px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.22); font-size: 20px; font-weight: 600; color: #dfe1ff; }
+  .chips b.beta { color: #ffd37a; letter-spacing: 3px; border-color: rgba(255, 211, 122, 0.5); background: rgba(255, 211, 122, 0.1); }
+</style>
+<div class="banner">
+  <div class="grid"></div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <img class="ghost" src="logo.svg" alt="">
+  <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+  <img class="logo" src="logo.svg" alt="">
+  <h1>Capture <span>Friendly</span></h1>
+  <p class="tag">Plug &amp; play for your capture card – no OBS, no extra software</p>
+  <div class="chips"><b>Free &amp; open source</b><b>9 languages</b><b class="beta">BETA</b></div>
+</div>

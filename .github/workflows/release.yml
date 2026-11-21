@@ -1,0 +1,51 @@
+name: Release
+
+# Pushing a tag like v1.0.1 builds the Windows installer and publishes it as a GitHub release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Tag must match package.json
+        shell: bash
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package.json version $version" >&2
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Build installer
+        run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Release notes from the changelog (the newest section)
+        id: notes
+        shell: bash
+        run: |
+          echo "title=$(awk '/^## /{print substr($0,4); exit}' CHANGELOG.md)" >> "$GITHUB_OUTPUT"
+          awk '/^## /{n++; next} n==1' CHANGELOG.md > release-notes.md
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Capture Friendly ${{ steps.notes.outputs.title }}
+          body_path: release-notes.md
+          files: dist/Capture-Friendly-Setup-*.exe
